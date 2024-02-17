@@ -1,3 +1,5 @@
+const fsp = require( "fs/promises");
+
 const secs = (time) => {
   [m, s] = time.split(`:`).map((v) => parseInt(v));
   return m * 60 + s;
@@ -40,13 +42,20 @@ const cmd = [
   `output.mp4`,
 ].join(``);
 
-// Extract two pieces of the video
-console.log(`ffmpeg -ss 00:08.0 -i raw.mkv -c copy -to 03:12.0 output01.mp4`);
-console.log(`ffmpeg -ss 03:44.0 -i raw.mkv -c copy -to 17:50.0 output02.mp4`);
+const cmds = [
+  // Extract two pieces of the video
+  `ffmpeg -ss 00:00.0 -i raw.mkv -c copy -to 00:29.0 output01.mp4`,
+  `ffmpeg -ss 00:47.5 -i raw.mkv -c copy -to 01:03.0 output02.mp4`,
+  `ffmpeg -ss 01:58.0 -i raw.mkv -c copy -to 05:10.0 output03.mp4`,
 
-// Splice them back together.  Net effect is that a small chunk's cut out of it.
-// I had to wait while `npm install` happens, but there's no reason why anyone viewing the video should have to.
-console.log(`ffmpeg -safe 0 -f concat -i list.txt -c copy output03.mp4`);
+  // Splice them back together.  Net effect is that a small chunk's cut out of it.
+  // I had to wait while `npm install` happens, but there's no reason why anyone viewing the video should have to.
+  `ffmpeg -safe 0 -f concat -i list.txt -c copy output99.mp4`,
 
-// Write out the command needed to add the timer to the video
-console.log(cmd);
+  // Write out the command needed to add the timer to the video
+  //cmd
+].join("\n");
+
+console.log(cmds);
+
+fsp.writeFile("addTimer.bat", cmds);
